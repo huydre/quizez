@@ -1,0 +1,39 @@
+name: Contract drift check
+
+# Fails when the committed contracts/openapi.yaml drifts from the live API spec.
+on:
+  pull_request:
+    paths:
+      - "apps/api/**"
+      - "contracts/**"
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for committed spec
+        id: check
+        run: test -f contracts/openapi.yaml && echo "present=true" >> "$GITHUB_OUTPUT" || echo "present=false" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-java@v4
+        if: steps.check.outputs.present == 'true'
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Start API
+        if: steps.check.outputs.present == 'true'
+        working-directory: apps/api
+        run: ./gradlew bootRun --no-daemon & echo $! > /tmp/api.pid
+      - name: Export live spec
+        if: steps.check.outputs.present == 'true'
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://localhost:8080/v3/api-docs -o /tmp/live-openapi.yaml && break
+            sleep 5
+          done
+          diff -u contracts/openapi.yaml /tmp/live-openapi.yaml \
+            && echo "contract in sync" \
+            || (echo "::error::contracts/openapi.yaml drifted — run scripts/codegen.sh"; exit 1)
+      - name: Stop API
+        if: always()
+        run: kill $(cat /tmp/api.pid) 2>/dev/null || true
