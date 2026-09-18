@@ -1,0 +1,40 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js
+.next/
+out/
+apps/web/.next/
+apps/web/out/
+
+# Gradle / Java
+.gradle/
+build/
+apps/api/build/
+apps/api/.gradle/
+*.jar
+!gradle/wrapper/gradle-wrapper.jar
+
+# Env / secrets
+.env
+.env.local
+.env.*.local
+apps/web/.env.local
+apps/api/.env
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS
+.DS_Store
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test / coverage
+coverage/

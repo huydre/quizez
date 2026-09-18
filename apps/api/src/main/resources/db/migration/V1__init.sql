@@ -1,0 +1,3 @@
+-- V1: initial schema placeholder.
+-- Domain tables (users, word_sets, cards, learning_paths, srs_state, ...)
+-- are added by feature migrations V2+ per docs/use-cases/.

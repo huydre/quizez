@@ -1,0 +1,11 @@
+# Local dev overrides — used with `spring.profiles.active=local`
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/quizez
+    username: quizez
+    password: quizez
+
+quizez:
+  jwt:
+    issuer: quizez
+    secret: local-dev-secret-key-32-bytes-minimum
